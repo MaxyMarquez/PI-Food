@@ -1,48 +1,51 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { searchRecipes } from '../../redux/actions';
-import './searchBar.css'; // Importar el archivo CSS
+import { useDispatch, useSelector } from 'react-redux';
+import { searchRecipes, filterDiets } from '../../redux/actions';
+import './searchBar.css';
 import FilterDiets from './FilterDiets/FilterDiets';
 
 const SearchBar = () => {
     const dispatch = useDispatch();
     const [title, setTitle] = useState('');
-    const [showResults, setShowResults] = useState(false);
+    const [loading, setLoading] = useState(false); // Nuevo estado para controlar si la búsqueda está en progreso
+
+    const searchTerm = useSelector((state) => state.searchTerm);
 
     const handleChange = (event) => {
         setTitle(event.target.value);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        if (title !== '') {
-            dispatch(searchRecipes(title));
-            setShowResults(true);
-        }
-
+        setLoading(true); // Iniciar la carga al comenzar la búsqueda
+        await dispatch(searchRecipes(title, searchTerm));
+        setLoading(false); // Finalizar la carga cuando se obtengan los resultados
     };
 
     const handleClearSearch = () => {
         setTitle('');
-        setShowResults(false);
-        dispatch(searchRecipes(''));
+        setLoading(false); // Si se borra el término de búsqueda, se puede detener la carga
+        dispatch(searchRecipes('', ''));
     };
 
     return (
         <div className="SearchBar">
             <FilterDiets />
-            <form onSubmit={(event) => handleSubmit(event)}>
+            <form onSubmit={handleSubmit}>
                 <div className="SearchBar__inputContainer">
                     <input
-                        className='SearchBar__input'
+                        className="SearchBar__input"
                         type="text"
                         value={title}
-                        onChange={(event) => handleChange(event)}
-                        placeholder='Search...' />
-                    <button type="submit" className="SearchBar__searchButton">Search</button>
+                        onChange={handleChange}
+                        placeholder="Search..."
+                    />
+                    <button type="submit" className="SearchBar__searchButton">
+                        Search
+                    </button>
                 </div>
             </form>
-            {showResults && title && (
+            {title && (
                 <div className="SearchBar__results">
                     <span>{title}</span>
                     <button type="button" className="SearchBar__clearButton" onClick={handleClearSearch}>
@@ -55,5 +58,3 @@ const SearchBar = () => {
 };
 
 export default SearchBar;
-
-

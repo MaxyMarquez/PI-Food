@@ -1,80 +1,69 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { filterDiets, getDiets, getRecipes } from '../../../redux/actions';
+import { getDiets, searchRecipes, sortRecipes } from '../../../redux/actions';
 
 const FilterDiets = () => {
     const dispatch = useDispatch();
-    const diets = useSelector(state => state.diets.map(diet => diet));
-
-    const [selectedDiet, setSelectedDiet] = useState('');
-    const [searchRecipe, setSearchRecipe] = useState('');
+    const diets = useSelector((state) => state.diets.map((diet) => diet));
+    const selectedDiet = useSelector((state) => state.selectedDiet);
+    const searchTerm = useSelector((state) => state.searchTerm);
 
     useEffect(() => {
         dispatch(getDiets());
     }, [dispatch]);
 
-    const handleOptionChange = (event) => {
-        setSelectedDiet(event.target.value.toLowerCase());
-    };
-
-    const handleSearchChange = (event) => {
-        setSearchRecipe(event.target.value.toLowerCase());
+    const handleChange = (event) => {
+        const selectedDiet = event.target.value.toLowerCase();
+        dispatch(searchRecipes(searchTerm, selectedDiet));
     };
 
     const handleClearSearch = () => {
-        setSelectedDiet('');
-        setSearchRecipe('');
-        dispatch(getRecipes());
+        dispatch(searchRecipes('', ''));
     };
 
-    useEffect(() => {
-        dispatch(filterDiets(selectedDiet, searchRecipe)); // Aplicamos ambos filtros
-    }, [dispatch, selectedDiet, searchRecipe]);
+    const handleSortAsc = () => {
+        dispatch(sortRecipes('asc'));
+    };
+
+    const handleSortDesc = () => {
+        dispatch(sortRecipes('desc'));
+    };
+
+    const handleSortReset = () => {
+        dispatch(sortRecipes(''));
+    };
 
     return (
         <div>
-            <div className='SearchBar__results__container'>
-                <div className="SearchBar__results">
-                    {selectedDiet && (
-                        <span>
-                            {selectedDiet}
-                            <button type="button" className="SearchBar__clearButton" onClick={handleClearSearch}>
-                                x
-                            </button>
-                        </span>
-                    )}
-                </div>
-
-                <div className="SearchBar__results">
-                    {searchRecipe && (
-                        <span>
-                            {searchRecipe}
-                            <button type="button" className="SearchBar__clearButton" onClick={handleClearSearch}>
-                                x
-                            </button>
-                        </span>
-                    )}
-                </div>
+            <div className="SearchBar__results">
+                {selectedDiet && (
+                    <span>
+                        {selectedDiet}
+                        <button type="button" className="SearchBar__clearButton" onClick={handleClearSearch}>
+                            x
+                        </button>
+                    </span>
+                )}
             </div>
-
-            <select name="" id="" value={selectedDiet} onChange={handleOptionChange}>
+            <select name="" id="" value={selectedDiet} onChange={handleChange}>
                 <option value="">All Diets</option>
-                {
-                    diets?.map((diet) => (
-                        <option key={diet} value={diet}>
-                            {diet[0].toUpperCase() + diet.slice(1)}
-                        </option>
-                    ))
-                }
+                {diets?.map((diet) => (
+                    <option key={diet} value={diet}>
+                        {diet[0].toUpperCase() + diet.slice(1)}
+                    </option>
+                ))}
             </select>
-            <input
-                type="text"
-                value={searchRecipe}
-                onChange={handleSearchChange}
-                placeholder="Search..."
-            />
+            <button type="button" onClick={handleSortAsc}>
+                Sort A-Z
+            </button>
+            <button type="button" onClick={handleSortDesc}>
+                Sort Z-A
+            </button>
+            <button type="button" onClick={handleSortReset}>
+                Reset Sort
+            </button>
         </div>
     );
 };
 
-export default FilterDiets;
+export default FilterDiets

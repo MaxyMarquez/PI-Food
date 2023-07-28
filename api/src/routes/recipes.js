@@ -3,21 +3,25 @@ const { getAllRecipes, getRecipeByID } = require('../controllers/getRecipes.js')
 
 
 router.get('/', async (req, res) => {
-    const { name } = req.query;
-    console.log(name);
+    const { name, diet } = req.query;
     try {
-        const recipes = await getAllRecipes();
+        let recipes = await getAllRecipes();
 
+        // Aplicamos el filtro por nombre si se proporciona el parámetro 'name'
         if (name) {
-            const filteredRecipes = await recipes.filter(recipe => recipe.title.toLowerCase().includes(name.toLowerCase()));
-            res.json(filteredRecipes)
-        } else {
-            res.json(recipes);
+            recipes = recipes.filter((recipe) => recipe.title.toLowerCase().includes(name.toLowerCase()));
         }
-    } catch (error) {
 
+        // Aplicamos el filtro por dieta si se proporciona el parámetro 'diet'
+        if (diet) {
+            recipes = recipes.filter((recipe) => recipe.diets.includes(diet.toLowerCase()));
+        }
+
+        res.json(recipes);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
     }
-})
+});
 
 router.get('/:id', async (req, res) => {
     const { id } = req.params;

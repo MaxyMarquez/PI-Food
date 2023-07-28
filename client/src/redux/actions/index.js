@@ -6,8 +6,7 @@ export const GET_RECIPES = 'GET_RECIPES';
 export const GET_RECIPE_BY_ID = 'GET_RECIPE_BY_ID';
 export const SET_CURRENT_PAGE = 'SET_CURRENT_PAGE';
 export const SEARCH_RECIPES = 'SEARCH_RECIPES'
-export const FILTERS = 'FILTERS'
-
+export const SORT_RECIPES = 'SORT_RECIPES';
 
 export const getRecipes = () => {
     return async dispatch => {
@@ -96,13 +95,32 @@ export const setCurrentPage = (page) => {
     };
 };
 
-export const searchRecipes = (name) => {
-    return async dispatch => {
+export const searchRecipes = (searchTerm, selectedDiet) => {
+    return async (dispatch) => {
         try {
-            const { data } = await axios.get(`http://localhost:3001/recipes?name=${name}`);
+            // Construimos la URL con los parámetros de búsqueda
+            let url = 'http://localhost:3001/recipes';
+
+            // Si hay un searchTerm, agregamos el parámetro de búsqueda a la URL
+            if (searchTerm) {
+                url += `?name=${searchTerm}`;
+            }
+
+            // Si hay un selectedDiet y ya hay un searchTerm en la URL, usamos el símbolo '&' para agregar el parámetro de dieta.
+            // Si no hay searchTerm en la URL, usamos el símbolo '?' para agregar el primer parámetro.
+            if (selectedDiet) {
+                url += searchTerm ? `&diet=${selectedDiet.toLowerCase()}` : `?diet=${selectedDiet.toLowerCase()}`;
+            }
+
+            const { data } = await axios.get(url);
+
             dispatch({
                 type: SEARCH_RECIPES,
-                payload: data,
+                payload: {
+                    recipes: data,
+                    searchTerm: searchTerm,
+                    selectedDiet: selectedDiet,
+                },
             });
         } catch (error) {
             console.log(error);
@@ -110,13 +128,10 @@ export const searchRecipes = (name) => {
     };
 };
 
-export const filterDiets = (diet, searchRecipe) => {
+export const sortRecipes = (orderBy) => {
     return {
-        type: FILTERS,
-        payload: {
-            diet,
-            searchRecipe,
-        },
+        type: SORT_RECIPES,
+        payload: orderBy,
     };
 };
 

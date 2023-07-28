@@ -3,7 +3,9 @@ import './loadingPage.css'
 
 const LoadingPage = () => {
     return (
-        <span className="loader"></span>
+        <div className='loader__container'>
+            <span className="loader"></span>
+        </div>
     )
 }
 

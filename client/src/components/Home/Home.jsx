@@ -2,16 +2,16 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRecipes } from '../../redux/actions';
 import Pagination from '../Pagination/Pagination';
+import SearchBar from '../Filters/SearchBar';
 import LoadingPage from '../LoadingPage/LoadingPage';
-import SearchBar from '../Filters/SearchBar'
-import './home.css'
+import './home.css';
 
 const Home = () => {
     const dispatch = useDispatch();
     const loading = useSelector(state => state.isLoading);
 
     useEffect(() => {
-        dispatch(getRecipes())
+        dispatch(getRecipes());
     }, [dispatch]);
 
     return (
@@ -30,4 +30,4 @@ const Home = () => {
     )
 }
 
-export default Home;
+export default Home

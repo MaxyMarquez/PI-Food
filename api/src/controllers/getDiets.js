@@ -4,7 +4,7 @@ const { getAllRecipes } = require('../controllers/getRecipes');
 // Función para obtener los distintos tipos de dieta de la API e insertarlas en la base de datos
 const addDiets = async () => {
     try {
-        //Resultados de la API HENRY Y LA RECOCHA DE TU MADRE
+        //Resultados de la API
         const recipes = await getAllRecipes();
 
         // Extraer las dietas de cada receta y agregarlas al array arrDiets

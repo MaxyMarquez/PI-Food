@@ -1,10 +1,8 @@
-import { GET_DIETS, GET_RECIPES, GET_RECIPE_BY_ID, POST_RESPONSE, SET_CURRENT_PAGE, SEARCH_RECIPES, FILTERS } from "../actions";
+import { GET_DIETS, GET_RECIPES, GET_RECIPE_BY_ID, POST_RESPONSE, SET_CURRENT_PAGE, SEARCH_RECIPES, SORT_RECIPES } from "../actions";
 
 const initialState = {
     recipes: [],
-    recipesCopy: [],
     recipeDetail: {},
-    searchRecipe: '',
     diets: [],
     currentPage: 1,
     response: null,
@@ -17,7 +15,6 @@ const rootReducer = (state = initialState, action) => {
             return {
                 ...state,
                 recipes: action.payload.recipes,
-                recipesCopy: action.payload.recipes,
                 currentPage: action.payload.currentPage,
                 isLoading: false,
             }
@@ -46,23 +43,30 @@ const rootReducer = (state = initialState, action) => {
         case SEARCH_RECIPES:
             return {
                 ...state,
-                recipes: action.payload,
-            }
-        case FILTERS:
-            const { recipesCopy } = state;
-            const selectedDiet = action.payload.diet.toLowerCase();
-            const searchRecipe = action.payload.searchRecipe.toLowerCase();
+                recipes: action.payload.recipes,
+                searchTerm: action.payload.searchTerm,
+                selectedDiet: action.payload.selectedDiet,
+                isLoading: false,
+            };
 
-            const filteredRecipes = recipesCopy.filter(recipe => {
-                const dietMatch = selectedDiet === '' || recipe.diets.includes(selectedDiet);
-                const nameMatch = recipe.title.toLowerCase().includes(searchRecipe);
-                return dietMatch && nameMatch;
-            });
+        case SORT_RECIPES:
+            const { recipes } = state;
+            const orderBy = action.payload;
+            let sortedRecipes = [];
+
+            if (orderBy === 'asc') {
+                sortedRecipes = [...recipes].sort((a, b) => a.title.localeCompare(b.title));
+            } else if (orderBy === 'desc') {
+                sortedRecipes = [...recipes].sort((a, b) => b.title.localeCompare(a.title));
+            } else {
+                sortedRecipes = recipes;
+            }
 
             return {
                 ...state,
-                recipes: filteredRecipes,
+                recipes: sortedRecipes,
             };
+
         default:
             return state;
     }

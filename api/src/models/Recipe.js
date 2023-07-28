@@ -16,7 +16,6 @@ module.exports = (sequelize) => {
     },
     image: {
       type: DataTypes.BLOB('long'), // 'long' se utiliza para BLOBs grandes (> 65535 bytes)
-      allowNull: false
     },
     summary: {
       type: DataTypes.STRING,
