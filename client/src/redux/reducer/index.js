@@ -2,6 +2,7 @@ import { GET_DIETS, GET_RECIPES, GET_RECIPE_BY_ID, POST_RESPONSE, SET_CURRENT_PA
 
 const initialState = {
     recipes: [],
+    recipesCopy: [],
     recipeDetail: {},
     diets: [],
     currentPage: 1,
@@ -15,6 +16,7 @@ const rootReducer = (state = initialState, action) => {
             return {
                 ...state,
                 recipes: action.payload.recipes,
+                recipesCopy: action.payload.recipes,
                 currentPage: action.payload.currentPage,
                 isLoading: false,
             }
@@ -48,18 +50,20 @@ const rootReducer = (state = initialState, action) => {
                 selectedDiet: action.payload.selectedDiet,
                 isLoading: false,
             };
-
         case SORT_RECIPES:
             const { recipes } = state;
             const orderBy = action.payload;
+
             let sortedRecipes = [];
 
-            if (orderBy === 'asc') {
+            if (orderBy === 'alpha_asc') {
                 sortedRecipes = [...recipes].sort((a, b) => a.title.localeCompare(b.title));
-            } else if (orderBy === 'desc') {
+            } else if (orderBy === 'alpha_desc') {
                 sortedRecipes = [...recipes].sort((a, b) => b.title.localeCompare(a.title));
+            } else if (orderBy === 'score_asc') {
+                sortedRecipes = [...recipes].sort((a, b) => b.healthScore - a.healthScore);
             } else {
-                sortedRecipes = recipes;
+                sortedRecipes = [...recipes].sort((a, b) => a.healthScore - b.healthScore);
             }
 
             return {

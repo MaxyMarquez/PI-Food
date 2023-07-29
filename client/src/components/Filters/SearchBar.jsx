@@ -7,30 +7,27 @@ import FilterDiets from './FilterDiets/FilterDiets';
 const SearchBar = () => {
     const dispatch = useDispatch();
     const [title, setTitle] = useState('');
-    const [loading, setLoading] = useState(false); // Nuevo estado para controlar si la búsqueda está en progreso
 
-    const searchTerm = useSelector((state) => state.searchTerm);
+    const selectedDiet = useSelector((state) => state.selectedDiet);
 
     const handleChange = (event) => {
         setTitle(event.target.value);
     };
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
-        setLoading(true); // Iniciar la carga al comenzar la búsqueda
-        await dispatch(searchRecipes(title, searchTerm));
-        setLoading(false); // Finalizar la carga cuando se obtengan los resultados
+        dispatch(searchRecipes(title, selectedDiet));
+
     };
 
     const handleClearSearch = () => {
         setTitle('');
-        setLoading(false); // Si se borra el término de búsqueda, se puede detener la carga
-        dispatch(searchRecipes('', ''));
+        dispatch(searchRecipes('', selectedDiet));
     };
 
     return (
         <div className="SearchBar">
-            <FilterDiets />
+
             <form onSubmit={handleSubmit}>
                 <div className="SearchBar__inputContainer">
                     <input
@@ -41,18 +38,18 @@ const SearchBar = () => {
                         placeholder="Search..."
                     />
                     <button type="submit" className="SearchBar__searchButton">
-                        Search
                     </button>
+                    {title && (
+                        <div className="SearchBar__results">
+                            <button type="button" className="SearchBar__clearButton" onClick={handleClearSearch}>
+                                X
+                            </button>
+                        </div>
+                    )}
                 </div>
             </form>
-            {title && (
-                <div className="SearchBar__results">
-                    <span>{title}</span>
-                    <button type="button" className="SearchBar__clearButton" onClick={handleClearSearch}>
-                        x
-                    </button>
-                </div>
-            )}
+            <FilterDiets />
+
         </div>
     );
 };

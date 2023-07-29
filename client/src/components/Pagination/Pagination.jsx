@@ -1,19 +1,17 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getRecipes, setCurrentPage } from '../../redux/actions';
+import { setCurrentPage } from '../../redux/actions';
 import Card from '../Card/Card';
 import './pagination.css';
 
-const Pagination = () => {
+const Pagination = ({ recipes }) => {
     const dispatch = useDispatch();
-    const recipes = useSelector(state => state.recipes);
     const currentPage = useSelector(state => state.currentPage);
     const totalRecipes = recipes.length;
     const itemsPerPage = 9;
     const totalPages = Math.ceil(totalRecipes / itemsPerPage);
 
     useEffect(() => {
-        dispatch(getRecipes());
         dispatch(setCurrentPage(1));
     }, [dispatch]);
 
@@ -24,13 +22,20 @@ const Pagination = () => {
     const renderItemsForCurrentPage = () => {
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = Math.min(startIndex + itemsPerPage, totalRecipes);
+
+        if (totalRecipes === 0) {
+            return <div>ERROR</div>
+        }
+
         return recipes.slice(startIndex, endIndex).map((recipe) => (
             <Card
                 key={recipe.id}
                 id={recipe.id}
                 title={recipe.title}
                 image={recipe.image}
+                healthScore={recipe.healthScore}
                 diets={recipe.diets}
+
             />
         ));
     };

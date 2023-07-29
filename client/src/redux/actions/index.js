@@ -20,7 +20,7 @@ export const getRecipes = () => {
                 }
             });
         } catch (error) {
-
+            console.error('error');
         }
     }
 }
@@ -41,7 +41,7 @@ export const getRecipeByID = id => {
             });
 
         } catch (error) {
-            console.error(error);
+            console.error('error');
         }
     };
 };
@@ -49,24 +49,12 @@ export const getRecipeByID = id => {
 export const postRecipe = (info) => {
     return async (dispatch) => {
         try {
-            // Creamos un nuevo FormData y agregamos la información necesaria
-            const formData = new FormData();
-            formData.append('name', info.name);
-            formData.append('image', info.image); // La imagen en formato base64
-            formData.append('summary', info.summary);
-            formData.append('healthScore', info.healthScore);
-            formData.append('steps', JSON.stringify(info.steps));
-            formData.append('diets', JSON.stringify(info.diets));
 
-            const response = await axios.post('http://localhost:3001/create_recipe', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data', // Importante para enviar la imagen en formato FormData
-                },
-            });
+            const response = await axios.post('http://localhost:3001/create_recipe', info);
 
             dispatch({
                 type: POST_RESPONSE,
-                payload: response.data,
+                payload: response,
             });
         } catch (error) {
             // Manejar el error aquí si es necesario
@@ -83,7 +71,7 @@ export const getDiets = () => {
                 payload: data
             });
         } catch (error) {
-            console.error(error);
+            console.error('error');
         }
     };
 };
@@ -123,7 +111,7 @@ export const searchRecipes = (searchTerm, selectedDiet) => {
                 },
             });
         } catch (error) {
-            console.log(error);
+            console.log('error');
         }
     };
 };

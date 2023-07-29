@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDiets, searchRecipes, sortRecipes } from '../../../redux/actions';
+import { getDiets, getRecipes, searchRecipes, sortRecipes } from '../../../redux/actions';
+import './filterDiets.css'
 
 const FilterDiets = () => {
     const dispatch = useDispatch();
@@ -17,47 +18,48 @@ const FilterDiets = () => {
         dispatch(searchRecipes(searchTerm, selectedDiet));
     };
 
-    const handleClearSearch = () => {
-        dispatch(searchRecipes('', ''));
+    const handleSortAlphaAsc = () => {
+        dispatch(sortRecipes('alpha_asc'));
     };
 
-    const handleSortAsc = () => {
-        dispatch(sortRecipes('asc'));
+    const handleSortAlphaDesc = () => {
+        dispatch(sortRecipes('alpha_desc'));
     };
 
-    const handleSortDesc = () => {
-        dispatch(sortRecipes('desc'));
+    const handleSortScoreAsc = () => {
+        dispatch(sortRecipes('score_asc'));
+    };
+
+    const handleSortScoreDesc = () => {
+        dispatch(sortRecipes('score_desc'));
     };
 
     const handleSortReset = () => {
-        dispatch(sortRecipes(''));
+        dispatch(getRecipes());
+        dispatch(searchRecipes(searchTerm, selectedDiet));
     };
 
     return (
         <div>
-            <div className="SearchBar__results">
-                {selectedDiet && (
-                    <span>
-                        {selectedDiet}
-                        <button type="button" className="SearchBar__clearButton" onClick={handleClearSearch}>
-                            x
-                        </button>
-                    </span>
-                )}
-            </div>
-            <select name="" id="" value={selectedDiet} onChange={handleChange}>
-                <option value="">All Diets</option>
+            <select className='filter__select' name="" id="" value={selectedDiet} onChange={handleChange}>
+                <option className='filter__option' value="">All Diets</option>
                 {diets?.map((diet) => (
-                    <option key={diet} value={diet}>
+                    <option className='filter__option' key={diet} value={diet}>
                         {diet[0].toUpperCase() + diet.slice(1)}
                     </option>
                 ))}
             </select>
-            <button type="button" onClick={handleSortAsc}>
+            <button type="button" onClick={handleSortAlphaAsc}>
                 Sort A-Z
             </button>
-            <button type="button" onClick={handleSortDesc}>
+            <button type="button" onClick={handleSortAlphaDesc}>
                 Sort Z-A
+            </button>
+            <button type="button" onClick={handleSortScoreAsc}>
+                Health Score +
+            </button>
+            <button type="button" onClick={handleSortScoreDesc}>
+                Health Score -
             </button>
             <button type="button" onClick={handleSortReset}>
                 Reset Sort

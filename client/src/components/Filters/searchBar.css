@@ -13,11 +13,16 @@
 .SearchBar__inputContainer {
     display: flex;
     align-items: center;
+    position: relative;
+    margin: 0 10px;
 }
 
 .SearchBar__input {
+    border: 1px solid rgb(131, 131, 131);
+    border-radius: 5px 0 0 5px;
+    border-right: none;
+    height: 50px;
     padding-inline: .5em;
-    padding-block: .5em;
     font-size: 1.2em;
 }
 
@@ -27,13 +32,14 @@
 
 /* Estilos para el botón "Search" */
 .SearchBar__searchButton {
+    border: 1px solid rgb(131, 131, 131);
+    border-radius: 0 5px 5px 0;
     background-color: transparent;
-    border: none;
-    padding: 8px 0;
     cursor: pointer;
-    margin: 0 10px;
-    font-size: 1.2em;
     color: #696969;
+    font-size: 1.2em;
+    width: 50px;
+    height: 50px;
 }
 
 .SearchBar__searchButton::before {
@@ -41,7 +47,6 @@
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
     font-size: 1.2em;
-    margin-right: 10px;
 }
 
 /* Estilos para el contenedor de resultados */
@@ -52,15 +57,14 @@
 }
 
 .SearchBar__results {
-    background: #f9f9f9;
+    position: absolute;
+    right: 50px;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: none;
     width: auto;
-    margin-top: 5px;
-    /* Agregamos un margen superior para separar del input de búsqueda */
+    background: transparent;
 }
 
-/* Estilos para el botón "x" dentro del recuadro */
 .SearchBar__clearButton {
     background-color: transparent;
     border: none;

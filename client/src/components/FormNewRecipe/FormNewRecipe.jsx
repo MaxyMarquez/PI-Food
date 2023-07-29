@@ -34,33 +34,26 @@ const FormNewRecipe = () => {
     };
 
     const handleImageChange = (event) => {
-        const file = event.target.files[0];
-        console.log(file);
-        if (file) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onloadend = () => {
-                setRecipeImage(reader.result); // Establecer el estado recipeImage con la imagen en base64
-            };
-        }
+        setRecipeImage(event.target.value)
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         // Aquí creamos el objeto FormData y convertimos la imagen a base64
-        const formData = new FormData();
-        formData.append('name', recipeName);
-        formData.append('image', recipeImage); // La imagen en base64
-        formData.append('summary', recipeSummary);
-        formData.append('healthScore', recipeHealthScore);
-        formData.append('steps', JSON.stringify(steps));
-        formData.append('diets', JSON.stringify(diet));
+        const formData = {
+            name: recipeName,
+            image: recipeImage,
+            summary: recipeSummary,
+            steps: [...steps],
+            healthScore: recipeHealthScore,
+            diets: [...diet],
+        }
 
         try {
             // Envía el formulario al backend para crear la receta
             dispatch(postRecipe(formData));
-            console.log(formData.image);
+            console.log(formData);
             // Limpia los campos después de enviar la receta
             setRecipeName('');
             setRecipeSummary('');
@@ -89,9 +82,8 @@ const FormNewRecipe = () => {
 
             <label className='form__label'>Image</label>
             <input
-                type="file"
+                type="text"
                 name="image"
-                accept=".jpg,.png,.jpeg"
                 onChange={handleImageChange}
             />
 

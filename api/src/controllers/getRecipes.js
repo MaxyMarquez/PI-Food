@@ -54,7 +54,7 @@ const getRecipesDB = async () => {
             id: data.id,
             title: data.name,
             image: data.image,
-            health_score: data.healthScore,
+            healthScore: data.healthScore,
             summary: data.summary,
             steps: data.steps,
             diets: data.diets.map(diet => diet.name)
@@ -71,15 +71,31 @@ const getAllRecipes = async () => {
     return recipeApi?.concat(recipeDB)
 }
 
+const getFilteredRecipes = async (name, diet) => {
+    const allRecipes = await getAllRecipes();
+
+    let recipes = allRecipes;
+
+    if (name) {
+        recipes = recipes.filter((recipe) => recipe.title.toLowerCase().includes(name.toLowerCase()));
+    }
+
+    if (diet) {
+        recipes = recipes.filter((recipe) => recipe.diets.includes(diet.toLowerCase()));
+    }
+
+    return recipes;
+}
+
 // Función que devuelve recipe por ID
 const getRecipeByID = async (id) => {
     try {
         const recipes = await getAllRecipes();
         const recipe = recipes.find(result => result.id.toString() === id)
-        console.log(recipe);
+
         return recipe
     } catch (error) {
         console.error(error);
     }
 }
-module.exports = { getAllRecipes, getRecipeByID };
+module.exports = { getAllRecipes, getRecipeByID, getFilteredRecipes };
