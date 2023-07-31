@@ -13,35 +13,52 @@ const RecipeDetail = () => {
 
     useEffect(() => {
         dispatch(getRecipeByID(id))
-            .then(() => setLoading(false)) // Establecer loading en false después de obtener los datos
-            .catch(() => setLoading(false)); // En caso de error, también establecer loading en false
-    }, [dispatch, id]);
+            .then(() => setLoading(false))
+            .catch(() => setLoading(false));
+    }, [dispatch]);
+
     return (
-        <div>
+        <div className='recipe-detail__container'>
             {
                 loading ? (
                     <LoadingPage />
                 ) : (
-                    <div className='recipe-detail__container'>
-                        <div className='recipe-detail__title__container'>
-                            <div className='recipe-detail__title__img'>
+                    <div >
+                        <div className='recipe-detail__title'>
+                            <h2>{recipe.title}</h2>
+                        </div>
+
+                        <span className='recipe__line'></span>
+
+                        <div className='recipe-detail__header'>
+                            <div className='recipe-detail__img'>
                                 <img src={recipe.image} alt="" />
                             </div>
-                            <h2><span>{recipe.title}</span></h2>
-                        </div>
-                        <div className='recipe-detail__summary'>
-                            <p>{recipe.summary?.replace(/<[^>]*>/g, '')}</p>
-                        </div>
-                        <div>
-                            <div>
-                                {
-                                    recipe.steps?.map((step, index) => (
-                                        <ul key={index}>
-                                            <li>{index + 1} - {step}</li>
-                                        </ul>
-                                    ))
-                                }
+
+                            <div className='recipe-detail__summary'>
+                                <h2>Summary</h2>
+                                <p>{recipe.summary?.replace(/<[^>]*>/g, '')}</p>
                             </div>
+                        </div>
+
+                        <span className='recipe__line'></span>
+
+                        <div className='recipe-detail__steps'>
+                            <h2>Steps</h2>
+                            <ul>
+                                {recipe.steps?.map((step, index) => (
+                                    <li key={index}>
+                                        <span className='step-number'>{index + 1} -</span> {step}</li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <span className='recipe__line'></span>
+
+                        <div>
+                            {recipe.ingredients?.map(ingredient => (
+                                <li>{ingredient.charAt(0).toUpperCase() + ingredient.slice(1)}</li>
+                            ))}
                         </div>
                     </div>
                 )

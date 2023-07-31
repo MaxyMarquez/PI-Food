@@ -6,7 +6,7 @@ const StarRating = ({ score }) => {
     const maxStars = 128;
     const starPercentage = (score / maxStars) * 100;
     const starPercentageRounded = Math.round(starPercentage);
-    console.log(starPercentage);
+
     const StarStyles = () => {
         return {
             width: starPercentageRounded + "%"

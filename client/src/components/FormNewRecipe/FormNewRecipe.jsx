@@ -1,29 +1,55 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { getDiets, postRecipe } from '../../redux/actions';
+import formValidation from './formValidations'
 import './formNewRecipe.css'
 
 const FormNewRecipe = () => {
 
     const dispatch = useDispatch();
+
+    const recipes = useSelector(state => state.recipes);
     const diets = useSelector(state => state.diets);
 
     const [recipeName, setRecipeName] = useState('');
     const [recipeSummary, setRecipeSummary] = useState('');
     const [recipeHealthScore, setRecipeHealthScore] = useState(0)
-    const [recipeImage, setRecipeImage] = useState(null);
+    const [recipeImage, setRecipeImage] = useState('');
     const [steps, setSteps] = useState([]);
     const [currentStep, setCurrentStep] = useState('');
     const [diet, setDiet] = useState([]);
+    const [errors, setErrors] = useState({});
+    const [errorStep, setErrorStep] = useState('');
+    const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
         dispatch(getDiets())
-    }, [dispatch])
+        const validations = formValidation({
+            name: recipeName,
+            image: recipeImage,
+            summary: recipeSummary,
+            steps: steps,
+            diet: diet,
+        }, recipes)
+        setDisabled(isStepButtonDisabled);
+        setErrorStep('')
+        setErrors(validations);
+    }, [dispatch, recipeName, recipeImage, recipeSummary, currentStep, steps, diet, disabled, errorStep, recipes])
 
     const handleAddStep = () => {
         setSteps([...steps, currentStep]);
         setCurrentStep('');
     };
+
+    const isStepButtonDisabled = () => {
+        if (currentStep.length < 10) {
+            setErrorStep('* Your step of your recipe should be longer than 10 characters.')
+            setDisabled(true)
+        } else if (currentStep.length > 500) {
+            setErrorStep('* Your step of your recipe should not be longer than 500 characters.')
+            setDisabled(true)
+        }
+    }
 
     const handleDiets = event => {
         if (event.target.checked) {
@@ -33,14 +59,9 @@ const FormNewRecipe = () => {
         }
     };
 
-    const handleImageChange = (event) => {
-        setRecipeImage(event.target.value)
-    };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Aquí creamos el objeto FormData y convertimos la imagen a base64
         const formData = {
             name: recipeName,
             image: recipeImage,
@@ -51,10 +72,8 @@ const FormNewRecipe = () => {
         }
 
         try {
-            // Envía el formulario al backend para crear la receta
             dispatch(postRecipe(formData));
-            console.log(formData);
-            // Limpia los campos después de enviar la receta
+
             setRecipeName('');
             setRecipeSummary('');
             setSteps([]);
@@ -63,88 +82,113 @@ const FormNewRecipe = () => {
             setDiet([]);
             setRecipeImage(null);
         } catch (error) {
-            console.error('Error al crear la receta', error);
+            console.error(error);
         }
     };
+
+    const isSubmitButtonEnabled = steps.length > 0 && Object.keys(errors).length === 0;
+
     return (
-        <form onSubmit={handleSubmit}>
+        <form className='form__container' onSubmit={handleSubmit}>
+            <div className='form__input__container'>
+                {/* Form title */}
+                <div className='form__title'>
+                    <label className='form__label'>#Title:</label>
+                    <div className='form__input'>
+                        <input
+                            type="text"
+                            placeholder='Enter recipe title'
+                            name="name" value={recipeName}
+                            onChange={event => setRecipeName(event.target.value)}
+                        />
+                        {errors.name && <p>{errors.name}</p>}
+                    </div>
+                </div>
 
-            <div className='form__title'>
-                <label className='form__label'>#Recipe Title:</label>
-                <input
-                    className='form__input'
-                    type="text"
-                    placeholder='Enter recipe name'
-                    name="name" value={recipeName}
-                    onChange={event => setRecipeName(event.target.value)}
-                />
+                {/* Form image */}
+                <div className='form__image'>
+                    <label className='form__label'>#Image: </label>
+                    <div className='form__input'>
+                        <input
+                            type="text"
+                            placeholder='Enter a URL image...'
+                            name="image"
+                            onChange={event => setRecipeImage(event.target.value)}
+                        />
+                        {errors.image && <p>{errors.image}</p>}
+                    </div>
+                </div>
+
+
+                {/* Form summary */}
+                <div className='form__summary'>
+                    <label className='form__label'>#Summary:</label>
+                    <div className="form__textarea">
+                        <textarea
+                            placeholder='Enter recipe summary'
+                            name="summary" value={recipeSummary}
+                            onChange={event => setRecipeSummary(event.target.value)}
+                        />
+                        {errors.summary && <p>{errors.summary}</p>}
+                    </div>
+                </div>
+
+                {/* Form steps */}
+                <div className='form__steps'>
+                    <label className='form__label'>#Steps:</label>
+                    <button disabled={disabled} type='button' onClick={handleAddStep}>Add Step</button>
+                    <div className="form__textarea">
+                        <textarea
+                            value={currentStep}
+                            onChange={event => setCurrentStep(event.target.value)}
+                            placeholder="Enter a step"
+                        />
+                        {errors.steps && <p>{errors.steps}</p>}
+                        {errorStep && <p>{errorStep}</p>}
+                    </div>
+                    <ul>
+                        {steps.map((step, index) => (
+                            <li key={index}> {index + 1} - {step}</li>
+                        ))}
+                    </ul>
+                </div>
+
+                {/* Health score */}
+                <div className='form__score'>
+                    <label className='form__label'>#Health Score: {recipeHealthScore}</label>
+                    <div className="form__range">
+                        <input
+                            type="range"
+                            name="healthScore" value={recipeHealthScore}
+                            onChange={event => setRecipeHealthScore(event.target.value)}
+                        />
+                    </div>
+                </div>
+
+                {/* Diets */}
+                <div className='form__diets'>
+                    <label className='form__label'>#Diets</label>
+                    <div className="form__input__diets">
+                        {diets?.map(diet => (
+                            <label key={diet} className='form__label__diets'>
+                                <input
+                                    type="checkbox"
+                                    name={diet}
+                                    value={diet}
+                                    onChange={event => handleDiets(event)}
+                                />
+                                {diet.charAt(0).toUpperCase() + diet.slice(1)}
+                            </label>
+                        ))}
+                    </div>
+                    {errors.diet && <p>{errors.diet}</p>}
+                </div>
+
+                {/* Button submit */}
+                <input className='form__submit' type="submit" value="Submit" disabled={!isSubmitButtonEnabled} />
             </div>
-
-            <label className='form__label'>Image</label>
-            <input
-                type="text"
-                name="image"
-                onChange={handleImageChange}
-            />
-
-            <div className='form__title'>
-                <label className='form__label'>#Recipe Summary:</label>
-                <textarea
-                    className='form__textarea'
-                    placeholder='Enter recipe summary'
-                    name="summary" value={recipeSummary}
-                    onChange={event => setRecipeSummary(event.target.value)}
-                />
-            </div>
-
-            <div className='form__title'>
-                <label className='form__label'>#Steps:</label>
-                <textarea
-                    className='form__textarea'
-                    value={currentStep}
-                    onChange={event => setCurrentStep(event.target.value)}
-                    placeholder="Ingrese un paso"
-                />
-                <button type='button' onClick={handleAddStep}>+ Add Step</button>
-
-                <ul>
-                    {steps.map((step, index) => (
-                        <li key={index}>{step}</li>
-                    ))}
-                </ul>
-            </div>
-
-            <div className='form__title'>
-                <label className='form__label'>#Health Score: {recipeHealthScore}</label>
-                <input
-                    className='input__range'
-                    type="range"
-                    name="healthScore" value={recipeHealthScore}
-                    onChange={event => setRecipeHealthScore(event.target.value)} />
-            </div>
-
-            <div className='form__title'>
-                <label className='form__label'>#Diets</label>
-                {
-                    diets?.map(diet => (
-
-                        <label key={diet} className='form__label'>
-                            <input
-                                type="checkbox"
-                                name={diet}
-                                value={diet}
-                                onChange={event => handleDiets(event)}
-                            /> {diet.charAt(0).toUpperCase() + diet.slice(1)}
-                        </label>
-
-                    ))
-                }
-            </div>
-
-            <input type="submit" value="Submit" />
-
         </form>
     )
 }
 
-export default FormNewRecipe;
+export default FormNewRecipe

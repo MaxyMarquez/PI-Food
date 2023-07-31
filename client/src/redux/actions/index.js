@@ -20,7 +20,7 @@ export const getRecipes = () => {
                 }
             });
         } catch (error) {
-            console.error('error');
+            console.error(error);
         }
     }
 }
@@ -41,13 +41,13 @@ export const getRecipeByID = id => {
             });
 
         } catch (error) {
-            console.error('error');
+            console.error(error);
         }
     };
 };
 
 export const postRecipe = (info) => {
-    return async (dispatch) => {
+    return async dispatch => {
         try {
 
             const response = await axios.post('http://localhost:3001/create_recipe', info);
@@ -57,7 +57,7 @@ export const postRecipe = (info) => {
                 payload: response,
             });
         } catch (error) {
-            // Manejar el error aquí si es necesario
+            console.error(error)
         }
     };
 };
@@ -83,21 +83,24 @@ export const setCurrentPage = (page) => {
     };
 };
 
-export const searchRecipes = (searchTerm, selectedDiet) => {
+export const searchRecipes = (searchTerm, selectedDiet, isCreated) => {
     return async (dispatch) => {
         try {
-            // Construimos la URL con los parámetros de búsqueda
+
             let url = 'http://localhost:3001/recipes';
 
-            // Si hay un searchTerm, agregamos el parámetro de búsqueda a la URL
             if (searchTerm) {
                 url += `?name=${searchTerm}`;
             }
 
-            // Si hay un selectedDiet y ya hay un searchTerm en la URL, usamos el símbolo '&' para agregar el parámetro de dieta.
-            // Si no hay searchTerm en la URL, usamos el símbolo '?' para agregar el primer parámetro.
             if (selectedDiet) {
                 url += searchTerm ? `&diet=${selectedDiet.toLowerCase()}` : `?diet=${selectedDiet.toLowerCase()}`;
+            }
+
+            if (isCreated) {
+                url += searchTerm && selectedDiet ? `&created=${isCreated}`
+                    : searchTerm || selectedDiet ? `&created=${isCreated}`
+                        : `?created=${isCreated}`
             }
 
             const { data } = await axios.get(url);
@@ -108,10 +111,11 @@ export const searchRecipes = (searchTerm, selectedDiet) => {
                     recipes: data,
                     searchTerm: searchTerm,
                     selectedDiet: selectedDiet,
+                    isCreated: isCreated,
                 },
             });
         } catch (error) {
-            console.log('error');
+            console.log(error);
         }
     };
 };

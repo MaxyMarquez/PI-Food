@@ -6,7 +6,9 @@ import './pagination.css';
 
 const Pagination = ({ recipes }) => {
     const dispatch = useDispatch();
+
     const currentPage = useSelector(state => state.currentPage);
+
     const totalRecipes = recipes.length;
     const itemsPerPage = 9;
     const totalPages = Math.ceil(totalRecipes / itemsPerPage);
@@ -35,7 +37,6 @@ const Pagination = ({ recipes }) => {
                 image={recipe.image}
                 healthScore={recipe.healthScore}
                 diets={recipe.diets}
-
             />
         ));
     };
@@ -99,7 +100,7 @@ const Pagination = ({ recipes }) => {
     };
 
     return (
-        <div>
+        <div className='render'>
             <div className="items-container">
                 {renderItemsForCurrentPage()}
             </div>

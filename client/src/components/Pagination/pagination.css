@@ -6,13 +6,12 @@
     align-items: center;
     justify-content: space-between;
     margin: 15px 0;
-    min-width: 825px;
+    width: 650px;
     height: 50px;
     background-color: rgba(0, 133, 33, 0.918);
 }
 
 .pagination button {
-    padding: 0 20px;
     font-size: 1.3rem;
     border: none;
     color: white;
@@ -23,7 +22,6 @@
 button.active {
     min-width: 70px;
     height: 100%;
-    margin: 0 15px;
     color: rgba(0, 133, 33, 0.918);
     background-color: white;
 }
@@ -62,6 +60,13 @@ button.active {
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
+    width: 100%;
+}
+
+.render {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
     width: 100%;
     min-height: 100vh;
 }

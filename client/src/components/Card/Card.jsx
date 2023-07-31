@@ -25,7 +25,7 @@ const Card = (props) => {
             <div className='card__title'>
                 <h2>{props.title}</h2>
             </div>
-            <Link className='card__button' to={`/${props.id}`} >View Recipe</Link>
+            <Link className='card__button' to={`/recipe/${props.id}`} >View Recipe</Link>
         </div>
     )
 }

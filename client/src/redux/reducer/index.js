@@ -2,10 +2,10 @@ import { GET_DIETS, GET_RECIPES, GET_RECIPE_BY_ID, POST_RESPONSE, SET_CURRENT_PA
 
 const initialState = {
     recipes: [],
-    recipesCopy: [],
     recipeDetail: {},
     diets: [],
     currentPage: 1,
+    isCreated: '',
     response: null,
     isLoading: true,
 };
@@ -16,7 +16,6 @@ const rootReducer = (state = initialState, action) => {
             return {
                 ...state,
                 recipes: action.payload.recipes,
-                recipesCopy: action.payload.recipes,
                 currentPage: action.payload.currentPage,
                 isLoading: false,
             }
@@ -24,7 +23,7 @@ const rootReducer = (state = initialState, action) => {
             return {
                 ...state,
                 recipeDetail: action.payload,
-                isLoading: false,
+                isLoading: null,
             }
         case POST_RESPONSE:
             return {
@@ -48,6 +47,7 @@ const rootReducer = (state = initialState, action) => {
                 recipes: action.payload.recipes,
                 searchTerm: action.payload.searchTerm,
                 selectedDiet: action.payload.selectedDiet,
+                isCreated: action.payload.isCreated,
                 isLoading: false,
             };
         case SORT_RECIPES:
@@ -56,14 +56,22 @@ const rootReducer = (state = initialState, action) => {
 
             let sortedRecipes = [];
 
-            if (orderBy === 'alpha_asc') {
-                sortedRecipes = [...recipes].sort((a, b) => a.title.localeCompare(b.title));
-            } else if (orderBy === 'alpha_desc') {
-                sortedRecipes = [...recipes].sort((a, b) => b.title.localeCompare(a.title));
-            } else if (orderBy === 'score_asc') {
-                sortedRecipes = [...recipes].sort((a, b) => b.healthScore - a.healthScore);
-            } else {
-                sortedRecipes = [...recipes].sort((a, b) => a.healthScore - b.healthScore);
+            switch (orderBy) {
+                case 'alpha_asc':
+                    sortedRecipes = [...recipes].sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+                case 'alpha_desc':
+                    sortedRecipes = [...recipes].sort((a, b) => b.title.localeCompare(a.title));
+                    break;
+                case 'score_asc':
+                    sortedRecipes = [...recipes].sort((a, b) => b.healthScore - a.healthScore);
+                    break;
+                case 'score_desc':
+                    sortedRecipes = [...recipes].sort((a, b) => a.healthScore - b.healthScore);
+                    break;
+
+                default:
+                    return { ...state, }
             }
 
             return {

@@ -5,23 +5,34 @@
     justify-content: center;
     position: relative;
     width: 100%;
-    width: 100%;
+    height: 400px;
     padding: 10px;
+    background-image: url('../../assets/4426510.jpg');
+    background-position: center;
+    background-size: cover;
 }
 
-/* Estilos para el contenedor del input de búsqueda y el botón "Search" */
 .SearchBar__inputContainer {
+    text-align: center;
+    padding: 100px;
+    background-color: rgba(255, 255, 255, 0.945);
+}
+
+.input__searchBar {
+    position: relative;
     display: flex;
     align-items: center;
-    position: relative;
-    margin: 0 10px;
+    justify-content: center;
+    padding: 30px;
+    width: 100%;
 }
 
 .SearchBar__input {
+    position: relative;
     border: 1px solid rgb(131, 131, 131);
     border-radius: 5px 0 0 5px;
     border-right: none;
-    height: 50px;
+    height: 40px;
     padding-inline: .5em;
     font-size: 1.2em;
 }
@@ -34,12 +45,12 @@
 .SearchBar__searchButton {
     border: 1px solid rgb(131, 131, 131);
     border-radius: 0 5px 5px 0;
-    background-color: transparent;
+    background-color: white;
     cursor: pointer;
     color: #696969;
     font-size: 1.2em;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
 }
 
 .SearchBar__searchButton::before {
@@ -49,16 +60,9 @@
     font-size: 1.2em;
 }
 
-/* Estilos para el contenedor de resultados */
-.SearchBar__results__container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .SearchBar__results {
     position: absolute;
-    right: 50px;
+    right: 70px;
     padding: 10px;
     border: none;
     width: auto;
@@ -70,5 +74,5 @@
     border: none;
     cursor: pointer;
     margin-left: 10px;
-    color: #999;
+    color: #000000;
 }

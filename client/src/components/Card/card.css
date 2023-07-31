@@ -59,9 +59,10 @@
 .card__title h2 {
     font-family: 'Shadows Into Light Two', cursive;
     font-size: 1.2rem;
+    font-weight: 300;
     text-align: center;
-    color: rgb(94, 94, 94);
-    letter-spacing: .1rem;
+    color: rgb(0, 0, 0);
+    letter-spacing: .2rem;
     padding: 0 5px;
 }
 
