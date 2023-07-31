@@ -25,10 +25,15 @@ const getRecipesAPI = async () => {
             image: data.image,
             summary: data.summary,
             healthScore: data.healthScore,
+            readyInMinutes: data.readyInMinutes,
+            servings: data.servings,
             steps: data.analyzedInstructions[0] && data.analyzedInstructions[0].steps
-                ? data.analyzedInstructions[0]?.steps.map(step => step.step)
+                ? data.analyzedInstructions[0].steps?.map(step => step.step)
                 : null,
-            diets: data.diets
+            ingredients: data.analyzedInstructions[0] && data.analyzedInstructions[0].steps
+                ? [...new Set(data.analyzedInstructions[0].steps.flatMap(step => step.ingredients.map(ingredient => ingredient.name)))]
+                : null,
+            diets: data.diets,
         }));
 
         return recipes;
@@ -57,7 +62,8 @@ const getRecipesDB = async () => {
             healthScore: data.healthScore,
             summary: data.summary,
             steps: data.steps,
-            diets: data.diets.map(diet => diet.name)
+            diets: data.diets.map(diet => diet.name),
+            created: true,
         }
     })
     return recipesDB
@@ -68,20 +74,26 @@ const getAllRecipes = async () => {
     const recipeApi = await getRecipesAPI();
     const recipeDB = await getRecipesDB();
 
-    return recipeApi?.concat(recipeDB)
+    return recipeDB.concat(recipeApi)
 }
 
-const getFilteredRecipes = async (name, diet) => {
+const getFilteredRecipes = async (name, diet, isCreated) => {
     const allRecipes = await getAllRecipes();
 
     let recipes = allRecipes;
 
     if (name) {
-        recipes = recipes.filter((recipe) => recipe.title.toLowerCase().includes(name.toLowerCase()));
+        recipes = recipes.filter(recipe => recipe.title.toLowerCase().includes(name.toLowerCase()));
     }
 
     if (diet) {
-        recipes = recipes.filter((recipe) => recipe.diets.includes(diet.toLowerCase()));
+        recipes = recipes.filter(recipe => recipe.diets.includes(diet.toLowerCase()));
+    }
+
+    if (isCreated === 'created') {
+        recipes = recipes.filter(recipe => recipe.hasOwnProperty('created'));
+    } else if (isCreated === 'notCreated') {
+        recipes = recipes.filter(recipe => !recipe.hasOwnProperty('created'));
     }
 
     return recipes;
@@ -98,4 +110,5 @@ const getRecipeByID = async (id) => {
         console.error(error);
     }
 }
+
 module.exports = { getAllRecipes, getRecipeByID, getFilteredRecipes };

@@ -7,10 +7,10 @@ const addDiets = async () => {
         //Resultados de la API
         const recipes = await getAllRecipes();
 
+        const arrDiets = ['vegetarian'];
+
         // Extraer las dietas de cada receta y agregarlas al array arrDiets
-        const arrDiets = [];
-        arrDiets.push(['vegetarian']);
-        await recipes.forEach(recipe => {
+        recipes.forEach(recipe => {
             recipe.diets.forEach(diet => arrDiets.push(diet));
         });
 

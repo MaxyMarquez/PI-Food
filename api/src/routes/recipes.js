@@ -3,9 +3,10 @@ const { getRecipeByID, getFilteredRecipes } = require('../controllers/getRecipes
 
 // Ruta GET que devuleve todas las recetas, y tambien filtra por nombre y dieta. 
 router.get('/', async (req, res) => {
-    const { name, diet } = req.query;
+    const { name, diet, created } = req.query;
     try {
-        const recipes = await getFilteredRecipes(name, diet);
+
+        const recipes = await getFilteredRecipes(name, diet, created);
 
         res.json(recipes);
     } catch (error) {
