@@ -80,11 +80,20 @@
     padding: 10px
 }
 
-.form__steps ul li {
-    list-style: none;
+.form__steps ul {
+    margin: 15px 10px;
 }
 
-.form__steps button {
+.form__steps ul li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    list-style: none;
+    margin: 5px 0;
+    font-size: 1.2em;
+}
+
+.form__steps .button__add {
     position: absolute;
     top: 20px;
     right: 10px;
@@ -153,21 +162,59 @@
     height: 40px;
     border: none;
     font-size: 1.3em;
-    color: rgb(173, 173, 173);
-    background-color: rgb(0, 0, 0);
+    color: rgb(252, 252, 252);
+    background-color: rgb(0, 145, 0);
     cursor: pointer;
     transition: all .3s;
 }
 
 .form__submit:hover {
-    color: rgb(255, 255, 255);
-    background-color: rgb(0, 145, 0);
+    background-color: rgb(0, 197, 0);
 }
 
 .form__submit[disabled] {
-    background-color: rgb(128, 128, 128)
+    background-color: rgb(255, 0, 0)
 }
 
-.form__submit[disabled]:hover {
-    background-color: red;
+.button__edit,
+.button__delete {
+    text-align: center;
+    width: 30px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: .7em;
+}
+
+.button__edit {
+    margin-left: 15px;
+}
+
+.button__edit::before {
+    content: '\f044';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 500;
+    font-size: 1.2em;
+}
+
+.button__delete::before {
+    content: '\f1f8';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 1.2em;
+}
+
+.button__cancel {
+    position: absolute;
+    top: 20px;
+    right: 90px;
+    border: none;
+    padding: 10px;
+    color: white;
+    background-color: rgb(39, 39, 39);
+    cursor: pointer;
+}
+
+.form__error {
+    color: red;
 }

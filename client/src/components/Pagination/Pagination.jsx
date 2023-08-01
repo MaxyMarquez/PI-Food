@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentPage } from '../../redux/actions';
 import Card from '../Card/Card';
 import './pagination.css';
+import Error from '../Error/Error';
 
 const Pagination = ({ recipes }) => {
     const dispatch = useDispatch();
@@ -26,7 +27,7 @@ const Pagination = ({ recipes }) => {
         const endIndex = Math.min(startIndex + itemsPerPage, totalRecipes);
 
         if (totalRecipes === 0) {
-            return <div>ERROR</div>
+            return <Error />
         }
 
         return recipes.slice(startIndex, endIndex).map((recipe) => (

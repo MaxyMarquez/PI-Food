@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { getDiets, postRecipe } from '../../redux/actions';
 import formValidation from './formValidations'
+import Modal from '../Modal/Modal';
+
 import './formNewRecipe.css'
 
 const FormNewRecipe = () => {
@@ -21,6 +23,9 @@ const FormNewRecipe = () => {
     const [errors, setErrors] = useState({});
     const [errorStep, setErrorStep] = useState('');
     const [disabled, setDisabled] = useState(false);
+    const [editingStep, setEditingStep] = useState(null);
+    const [editingStepIndex, setEditingStepIndex] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         dispatch(getDiets())
@@ -48,8 +53,33 @@ const FormNewRecipe = () => {
         } else if (currentStep.length > 500) {
             setErrorStep('* Your step of your recipe should not be longer than 500 characters.')
             setDisabled(true)
+        } else {
+            setErrorStep('');
+            setDisabled(false);
         }
-    }
+    };
+
+    const handleEditStep = (index) => {
+        const stepToEdit = steps[index];
+        setEditingStep(stepToEdit);
+        setCurrentStep(stepToEdit);
+        setEditingStepIndex(index);
+    };
+
+    const handleSaveStep = () => {
+        if (editingStep && editingStepIndex !== -1) {
+            const updatedSteps = [...steps];
+            updatedSteps[editingStepIndex] = currentStep;
+            setSteps(updatedSteps);
+            setEditingStep(null);
+            setEditingStepIndex(-1);
+            setCurrentStep('')
+        }
+    };
+
+    const handleDeleteStep = (index) => {
+        setSteps((prevSteps) => prevSteps.filter((_, i) => i !== index));
+    };
 
     const handleDiets = event => {
         if (event.target.checked) {
@@ -72,15 +102,17 @@ const FormNewRecipe = () => {
         }
 
         try {
+            setModalVisible(true);
+
             dispatch(postRecipe(formData));
 
             setRecipeName('');
+            setRecipeImage('');
             setRecipeSummary('');
             setSteps([]);
             setCurrentStep('');
             setRecipeHealthScore(0);
             setDiet([]);
-            setRecipeImage(null);
         } catch (error) {
             console.error(error);
         }
@@ -90,6 +122,7 @@ const FormNewRecipe = () => {
 
     return (
         <form className='form__container' onSubmit={handleSubmit}>
+            <Modal isOpen={modalVisible} />
             <div className='form__input__container'>
                 {/* Form title */}
                 <div className='form__title'>
@@ -101,7 +134,7 @@ const FormNewRecipe = () => {
                             name="name" value={recipeName}
                             onChange={event => setRecipeName(event.target.value)}
                         />
-                        {errors.name && <p>{errors.name}</p>}
+                        {errors.name && <p className='form__error'>{errors.name}</p>}
                     </div>
                 </div>
 
@@ -115,7 +148,7 @@ const FormNewRecipe = () => {
                             name="image"
                             onChange={event => setRecipeImage(event.target.value)}
                         />
-                        {errors.image && <p>{errors.image}</p>}
+                        {errors.image && <p className='form__error'>{errors.image}</p>}
                     </div>
                 </div>
 
@@ -129,26 +162,50 @@ const FormNewRecipe = () => {
                             name="summary" value={recipeSummary}
                             onChange={event => setRecipeSummary(event.target.value)}
                         />
-                        {errors.summary && <p>{errors.summary}</p>}
+                        {errors.summary && <p className='form__error'>{errors.summary}</p>}
                     </div>
                 </div>
 
                 {/* Form steps */}
-                <div className='form__steps'>
-                    <label className='form__label'>#Steps:</label>
-                    <button disabled={disabled} type='button' onClick={handleAddStep}>Add Step</button>
+                <div className="form__steps">
+                    <label className="form__label">#Steps:</label>
+                    <button
+                        className='button__add'
+                        type="button"
+                        onClick={editingStep ? handleSaveStep : handleAddStep}
+                        disabled={editingStep || errorStep ? disabled : false}
+                    >
+                        {editingStep ? 'Save Edit' : 'Add Step'}
+                    </button>
+                    {editingStep && (
+                        <button className='button__cancel' type="button" onClick={() => {
+                            setEditingStep('');
+                            setCurrentStep('');
+                        }}>
+                            Cancel Edit
+                        </button>
+                    )}
                     <div className="form__textarea">
                         <textarea
                             value={currentStep}
-                            onChange={event => setCurrentStep(event.target.value)}
                             placeholder="Enter a step"
+                            onChange={(event) => {
+                                setCurrentStep(event.target.value);
+                                isStepButtonDisabled(); // Llamada a la función para actualizar el estado disabled
+                            }}
                         />
-                        {errors.steps && <p>{errors.steps}</p>}
-                        {errorStep && <p>{errorStep}</p>}
+                        {errors.steps && <p className='form__error'>{errors.steps}</p>}
+                        {errorStep && <p className='form__error'>{errorStep}</p>}
                     </div>
                     <ul>
                         {steps.map((step, index) => (
-                            <li key={index}> {index + 1} - {step}</li>
+                            <li key={index}>
+                                {index + 1} - {step}
+                                <button className='button__edit' type="button" onClick={() => handleEditStep(index)}>
+                                </button>
+                                <button className='button__delete' type="button" onClick={() => handleDeleteStep(index)}>
+                                </button>
+                            </li>
                         ))}
                     </ul>
                 </div>
@@ -181,13 +238,14 @@ const FormNewRecipe = () => {
                             </label>
                         ))}
                     </div>
-                    {errors.diet && <p>{errors.diet}</p>}
+                    {errors.diet && <p className='form__error'>{errors.diet}</p>}
                 </div>
 
                 {/* Button submit */}
                 <input className='form__submit' type="submit" value="Submit" disabled={!isSubmitButtonEnabled} />
             </div>
-        </form>
+        </form >
+
     )
 }
 
